@@ -16,13 +16,6 @@ $(function () {
         "&units=imperial&appid=" +
         apiKey;
   
-
-      var queryUrl =
-        "https://api.openweathermap.org/data/2.5/weather?q=" +
-        city +
-        "&units=imperial&appid=" +
-        apiKey;
-  
       
       $.ajax({
         url: queryUrl,
@@ -49,32 +42,59 @@ $(function () {
         $("#humidity").text(data.main.humidity + " %");
       });
     }
+
+    function getFiveDayForecast(city) {
+        var forecastUrl = 
+        "https://api.openweathermap.org/data/2.5/forecast?q=" +
+        city +
+        "&units=imperial&appid=" +
+        apiKey;
+
+        $.ajax({
+            url: forecastUrl,
+            method: "GET",
+        }).then(function (data) {
+
+        console.log(data);
+
+        var forecastIconUrl = "https://openweathermap.org/img/wn/" + data.list[0].weather[0].icon + "@2x.png"
+
+        var forecastIconImg = $("<img>").attr("src", forecastIconUrl)
+
+        $("#forecast-icon").empty();
+        $("#forecast-icon").append(forecastIconImg);
+
+        $("#date").text(data.list[0].dt_txt);
+        $("#forecast-temp").text(data.list[0].main.temp + "°");
+        $("#forecast-humidity").text(data.list[0].main.humidity + " %");
+
+        });
+    }
   
     $(document).on("click", ".city", function () {
-      // get the name of the city using the data-city attribute of the clicked
-      // element
+      
       var city = $(this).attr("data-city");
   
-      // send ajax request for weather and display it
+      
       fetchWeatherForCity(city);
+      getFiveDayForecast(city);
     });
   
-    // listen for "submit" event on the #search-form
+    
     $("#search-form").on("submit", function (event) {
-      // prevent the default form behavior
+      
       event.preventDefault();
   
-      // store value of form input in a variable named search. remove any leading
-      // or trailing white space using the trim method
+      
       var city = $("#search-input").val().trim();
   
-      // do nothing if search has no characters (empty string)
       if (city === "") {
         return;
       }
   
-      // send ajax request for weather and display it
+      
       fetchWeatherForCity(city);
+      getFiveDayForecast(city);
     });
   });
   
